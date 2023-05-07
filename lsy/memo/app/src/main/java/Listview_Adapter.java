@@ -14,6 +14,7 @@ import org.w3c.dom.Text;
 import java.util.List;
 
 
+
 public class Listview_Adapter extends ArrayAdapter<Item> {
     private int resourceId;
 
