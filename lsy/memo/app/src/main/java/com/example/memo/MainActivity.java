@@ -13,8 +13,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    public ArrayList<String> text_edit_list=new ArrayList<String>();
-    private ArrayAdapter<String> myadapter;
+    public ArrayList<Item> text_edit_list=new ArrayList<Item>();
+    private Listview_Adapter myadapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
                 String input_data=null;
                 Intent intent_fab=new Intent(MainActivity.this,text_edit_activity.class);
                 intent_fab.putExtra("extra_data",input_data);
+                intent_fab.putExtra("extra_boolean",false);
                 startActivityForResult(intent_fab,1);//打开下一个界面并传入唯一标识符1
             }
         });
@@ -43,17 +44,19 @@ public class MainActivity extends AppCompatActivity {
             case 1:
                 if(resultCode==RESULT_OK){
                     String returndata=data.getStringExtra("data_return");//获得用户输入的数据
-                    text_edit_list.add(returndata);
+                    Item item = new Item(returndata,false); //这里是新建后的返回，直接用false
+                    text_edit_list.add(item);
                     ListView listView=(ListView) findViewById(R.id.list_view);
-                    myadapter=new ArrayAdapter<>(MainActivity.this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,text_edit_list);
+                    myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,text_edit_list);
                     listView.setAdapter(myadapter);
                     //监听点击事件
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            String input_data= (String) text_edit_list.get(i);
+                            String input_data= text_edit_list.get(i).getContent();
                             Intent intent_list=new Intent(MainActivity.this,text_edit_activity.class);
                             intent_list.putExtra("extra_data",input_data);
+                            intent_list.putExtra("extra_boolean",text_edit_list.get(i).getChecked());
                             text_edit_list.remove(i);
                             startActivityForResult(intent_list,2);//打开下一个界面并传入唯一标识符2
                         }
@@ -72,10 +75,13 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case 2:
                 if(resultCode==RESULT_OK){
+                    // 这里是有值的返回，所以需要同时去确定一下返回值。具体逻辑先不管先
                     String returndata=data.getStringExtra("data_return");
-                    text_edit_list.add(returndata);
+                    boolean checked = data.getBooleanExtra("data_return_boolean",false);
+                    Item item = new Item(returndata,checked);
+                    text_edit_list.add(item);
                     ListView listView=(ListView) findViewById(R.id.list_view);
-                    myadapter=new ArrayAdapter<>(MainActivity.this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,text_edit_list);
+                    myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,text_edit_list);
                     listView.setAdapter(myadapter);
 //                    }
                 }

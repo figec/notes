@@ -5,11 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import java.util.Calendar;
 
 public class text_edit_activity extends AppCompatActivity {
     private EditText editText;
+    private boolean checked;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,8 +22,11 @@ public class text_edit_activity extends AppCompatActivity {
             actionBar.hide();
         }
         editText=(EditText) findViewById(R.id.edit_text);
+
+
         Intent intent_input=getIntent();
         String input_data=intent_input.getStringExtra("extra_data");
+        checked = intent_input.getBooleanExtra("extra_boolean",false);
         if (input_data!=null){//设置文本框初始值
             int i=input_data.indexOf(" ");
             input_data=input_data.substring(i+1);//扔掉时间变量
@@ -42,8 +48,12 @@ public class text_edit_activity extends AppCompatActivity {
                 String time=year+"年"+month+"月"+day+"日"+hour+":"+minute+":"+second;
                 Intent intent_output=new Intent();
                 if(!editText.getText().toString().equals("")){//判断现在文本框里是否有文字
+                    //String returnStr = time+" "+editText.getText().toString();
+                    //boolean returnB =false; //这个不用的只是为了组成返回值
+                    //Item returndata = new Item(returnStr,returnB);
                     String returndata=time+" "+editText.getText().toString();
                     intent_output.putExtra("data_return",returndata);
+                    intent_output.putExtra("data_return_boolean",checked);
                     setResult(RESULT_OK,intent_output);
                 }
                 finish();

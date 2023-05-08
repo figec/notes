@@ -1,3 +1,5 @@
+package com.example.memo;
+
 public class Item {
     private String content;
     private boolean checked;
