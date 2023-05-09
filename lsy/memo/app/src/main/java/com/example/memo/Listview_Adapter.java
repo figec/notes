@@ -3,12 +3,14 @@ package com.example.memo;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -39,6 +41,23 @@ public class Listview_Adapter extends ArrayAdapter<Item> {
         }
 
 
+        // 定时对象
+        Handler handler=new Handler();
+        Runnable runnable=new Runnable() {
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+                //要做的事情——一定时间后将该元素从数据中删除
+                //定时5s
+                MainActivity.text_edit_list.remove(position);
+                //更新listview内容
+                notifyDataSetChanged();
+                //handler.postDelayed(this, 10000);
+            }
+        };
+
+
+
         // 创建复选框点击变化的监听器
         check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -54,6 +73,11 @@ public class Listview_Adapter extends ArrayAdapter<Item> {
                     //增加删除线
                     content.setPaintFlags(content.getPaintFlags()|Paint.STRIKE_THRU_TEXT_FLAG);
 
+                    //执行迟缓删除操作
+                    handler.postDelayed(runnable, 5000);
+
+
+
 
 
                 }
@@ -63,6 +87,9 @@ public class Listview_Adapter extends ArrayAdapter<Item> {
                     content.setBackgroundColor(Color.WHITE);
                     // 去除删除线
                     content.setPaintFlags(content.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                    // 如果在时间内取消了，则去除迟缓删除操作
+                    handler.removeCallbacks(runnable);
+
 
                 }
             }
