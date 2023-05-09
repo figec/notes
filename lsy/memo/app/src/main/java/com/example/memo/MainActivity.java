@@ -13,7 +13,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    public ArrayList<Item> text_edit_list=new ArrayList<Item>();
+    public static ArrayList<Item> text_edit_list=new ArrayList<Item>();
     private Listview_Adapter myadapter;
 
     @Override

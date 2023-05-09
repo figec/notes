@@ -16,4 +16,9 @@ public class Item {
     public boolean getChecked() {
         return checked;
     }
+
+    public void setChecked(boolean checked){
+        this.checked = checked;
+    }
+
 }
