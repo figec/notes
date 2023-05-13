@@ -15,7 +15,10 @@ import android.widget.TextView;
 
 import java.util.List;
 
-
+/**
+ * 自己写的适配器
+ * 来描述listview中每一个项的布局和复选框相应的响应
+ */
 
 public class Listview_Adapter extends ArrayAdapter<Item> {
     private int resourceId;
