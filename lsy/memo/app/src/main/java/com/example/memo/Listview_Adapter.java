@@ -60,7 +60,6 @@ public class Listview_Adapter extends ArrayAdapter<Item> {
         };
 
 
-
         // 创建复选框点击变化的监听器
         check.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -75,14 +74,8 @@ public class Listview_Adapter extends ArrayAdapter<Item> {
                     content.setBackgroundColor(Color.LTGRAY);
                     //增加删除线
                     content.setPaintFlags(content.getPaintFlags()|Paint.STRIKE_THRU_TEXT_FLAG);
-
                     //执行迟缓删除操作
                     handler.postDelayed(runnable, 5000);
-
-
-
-
-
                 }
                 else{
                     // 反之，执行删除取消命令
@@ -92,21 +85,9 @@ public class Listview_Adapter extends ArrayAdapter<Item> {
                     content.setPaintFlags(content.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                     // 如果在时间内取消了，则去除迟缓删除操作
                     handler.removeCallbacks(runnable);
-
-
                 }
             }
         });
-
-
-
-
         return view;
-
-
     }
-
-
-
-
 }
