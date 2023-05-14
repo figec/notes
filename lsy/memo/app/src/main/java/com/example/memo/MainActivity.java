@@ -10,7 +10,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     public static ArrayList<Item> text_edit_list=new ArrayList<Item>();
@@ -51,7 +54,12 @@ public class MainActivity extends AppCompatActivity {
             case 1:
                 if(resultCode==RESULT_OK){
                     String returndata=data.getStringExtra("data_return");//获得用户输入的数据
+                    Date creat_date=new Date();//获取创建时间
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+                    String formatted_Creatdate = formatter.format(creat_date);//修改创建时间格式
+                    returndata=formatted_Creatdate+" "+returndata;//给回传文本加上时间内容
                     Item item = new Item(returndata,false); //这里是新建后的返回，直接用false
+                    item.setCreat_date(creat_date);//传入创建时间
                     text_edit_list.add(item);
                     ListView listView=(ListView) findViewById(R.id.list_view);
                     myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,text_edit_list);
@@ -64,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                             Intent intent_list=new Intent(MainActivity.this,text_edit_activity.class);
                             intent_list.putExtra("extra_data",input_data);
                             intent_list.putExtra("extra_boolean",text_edit_list.get(i).getChecked());
+                            intent_list.putExtra("CreatDate",text_edit_list.get(i).getCreat_date().getTime());//传入该项目的创建时间
                             text_edit_list.remove(i);
                             startActivityForResult(intent_list,2);//打开下一个界面并传入唯一标识符2
                         }
@@ -85,7 +94,15 @@ public class MainActivity extends AppCompatActivity {
                     // 这里是有值的返回，所以需要同时去确定一下返回值。具体逻辑先不管先
                     String returndata=data.getStringExtra("data_return");
                     boolean checked = data.getBooleanExtra("data_return_boolean",false);
+                    long l_Creat_Date = data.getLongExtra("Return_CreatDate", 0);
+                    Date creat_date = new Date(l_Creat_Date);//接受原来条目的创建时间
+                    Date modify_date=new Date();
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+                    String formatted_ModifyDate = formatter.format(modify_date);
+                    returndata=formatted_ModifyDate+" "+returndata;
                     Item item = new Item(returndata,checked);
+                    item.setModify_date(modify_date);//设置最新修改时间
+                    item.setCreat_date(creat_date);//新条目原来未修改条目的创建时间
                     text_edit_list.add(item);
                     ListView listView=(ListView) findViewById(R.id.list_view);
                     myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,text_edit_list);

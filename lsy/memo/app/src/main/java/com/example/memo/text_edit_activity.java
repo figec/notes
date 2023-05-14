@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import java.util.Calendar;
+import java.util.Date;
 
 public class text_edit_activity extends AppCompatActivity {
     private EditText editText;
@@ -27,6 +28,8 @@ public class text_edit_activity extends AppCompatActivity {
         Intent intent_input=getIntent();
         String input_data=intent_input.getStringExtra("extra_data");
         checked = intent_input.getBooleanExtra("extra_boolean",false);
+        long l_Creat_Date = getIntent().getLongExtra("CreatDate", 0);
+        Date Creat_date = new Date(l_Creat_Date);//接受该项目的传入时间
         if (input_data!=null){//设置文本框初始值
             int i=input_data.indexOf(" ");
             input_data=input_data.substring(i+1);//扔掉时间变量
@@ -37,23 +40,15 @@ public class text_edit_activity extends AppCompatActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Calendar calendar = Calendar.getInstance();
-                //获取系统的日期和时间
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH)+1;
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-                int hour = calendar.get(Calendar.HOUR_OF_DAY);
-                int minute = calendar.get(Calendar.MINUTE);
-                int second = calendar.get(Calendar.SECOND);
-                String time=year+"年"+month+"月"+day+"日"+hour+":"+minute+":"+second;
                 Intent intent_output=new Intent();
                 if(!editText.getText().toString().equals("")){//判断现在文本框里是否有文字
                     //String returnStr = time+" "+editText.getText().toString();
                     //boolean returnB =false; //这个不用的只是为了组成返回值
                     //Item returndata = new Item(returnStr,returnB);
-                    String returndata=time+" "+editText.getText().toString();
+                    String returndata=editText.getText().toString();
                     intent_output.putExtra("data_return",returndata);
                     intent_output.putExtra("data_return_boolean",checked);
+                    intent_output.putExtra("Return_CreatDate",Creat_date.getTime());
                     setResult(RESULT_OK,intent_output);
                 }
                 finish();
