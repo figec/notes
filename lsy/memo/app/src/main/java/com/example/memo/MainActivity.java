@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
                     myadapter.notifyDataSetChanged();
                     return true;
                 }
+                break;
             case 1:
                 if (item_id==0) {
                     String input_data=null;
@@ -117,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (item_id==1) {
                     return true;
                 }
+                break;
             default:
         }
         return super.onContextItemSelected(item);
