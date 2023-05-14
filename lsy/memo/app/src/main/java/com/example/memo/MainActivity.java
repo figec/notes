@@ -33,7 +33,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent_fab,1);//打开下一个界面并传入唯一标识符1
             }
         });
-
+        fab.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+            //设置悬浮窗长按监听函数
+            @Override
+            public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+                contextMenu.add(1,0,0,"添加笔记");//与单击时相同
+                contextMenu.add(1,1,0,"历史笔记");//进入隐式文档
+            }
+        });
     }
 
 
@@ -91,14 +98,25 @@ public class MainActivity extends AppCompatActivity {
     //长按菜单响应函数
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        int item_id=item.getItemId();
+        int item_id=item.getItemId(), item_group=item.getGroupId();
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        switch (item_id) {
+        switch (item_group) {
             case 0:
-                text_edit_list.remove(menuInfo.position);
-                myadapter.notifyDataSetChanged();
-                return true;
+                if (item_id==0) {
+                    text_edit_list.remove(menuInfo.position);
+                    myadapter.notifyDataSetChanged();
+                    return true;
+                }
             case 1:
+                if (item_id==0) {
+                    String input_data=null;
+                    Intent intent_fab=new Intent(MainActivity.this,text_edit_activity.class);
+                    intent_fab.putExtra("extra_data",input_data);
+                    intent_fab.putExtra("extra_boolean",false);
+                    startActivityForResult(intent_fab,1);//打开下一个界面并传入唯一标识符1
+                } else if (item_id==1) {
+                    return true;
+                }
             default:
         }
         return super.onContextItemSelected(item);
