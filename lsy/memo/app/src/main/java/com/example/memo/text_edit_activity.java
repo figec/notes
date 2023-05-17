@@ -35,7 +35,7 @@ public class text_edit_activity extends AppCompatActivity {
             input_data=input_data.substring(i+1);//扔掉时间变量
             editText.setText(input_data.toCharArray(),0,input_data.length());
         }
-        //点击悬浮窗后做的响应
+        //点击按钮后做的响应
         Button save=(Button) findViewById(R.id.title_save);
         save.setOnClickListener(new View.OnClickListener() {
             @Override

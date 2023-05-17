@@ -15,6 +15,10 @@
             android:name=".text_edit_activity"
             android:exported="false" />
         <activity
+            android:name=".history_activity"
+            android:exported="false"
+            android:label="历史笔记"/>
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

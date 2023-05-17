@@ -24,7 +24,7 @@ public class Item {
         this.creat_date=creat_date;
     }
     public void setModify_date(Date creat_date){
-        this.creat_date=creat_date;
+        this.modify_date=new Date();
     }
     public String getContent() {
         return content;

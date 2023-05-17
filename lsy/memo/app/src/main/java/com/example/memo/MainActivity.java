@@ -11,13 +11,31 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
-    public static ArrayList<Item> text_edit_list=new ArrayList<Item>();
-    private Listview_Adapter myadapter;
+
+    protected static ArrayList<Item> text_edit_list=new ArrayList<Item>();
+
+    protected static Listview_Adapter myadapter;
+
+    protected static ArrayList<Item> history_text_list = new ArrayList<Item>();
+
+    protected static int removed_cnt = 0;
+
+    public static class ItemComparator implements Comparator<Item> {
+        @Override
+        public int compare(Item item1, Item item2) {
+            // 按照创建时间从后到先排序
+            return item2.getCreat_date().compareTo(item1.getCreat_date());
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +79,13 @@ public class MainActivity extends AppCompatActivity {
                     Item item = new Item(returndata,false); //这里是新建后的返回，直接用false
                     item.setCreat_date(creat_date);//传入创建时间
                     text_edit_list.add(item);
+                    history_text_list.add(item);
+                    Collections.sort(text_edit_list, new ItemComparator());
+                    Collections.sort(history_text_list,new ItemComparator());
                     ListView listView=(ListView) findViewById(R.id.list_view);
                     myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,text_edit_list);
                     listView.setAdapter(myadapter);
+                    myadapter.notifyDataSetChanged();
                     //监听点击事件
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
@@ -74,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                             intent_list.putExtra("extra_boolean",text_edit_list.get(i).getChecked());
                             intent_list.putExtra("CreatDate",text_edit_list.get(i).getCreat_date().getTime());//传入该项目的创建时间
                             text_edit_list.remove(i);
+                            history_text_list.remove(i+removed_cnt);
                             startActivityForResult(intent_list,2);//打开下一个界面并传入唯一标识符2
                         }
                     });
@@ -104,6 +127,9 @@ public class MainActivity extends AppCompatActivity {
                     item.setModify_date(modify_date);//设置最新修改时间
                     item.setCreat_date(creat_date);//新条目原来未修改条目的创建时间
                     text_edit_list.add(item);
+                    history_text_list.add(item);
+                    Collections.sort(text_edit_list, new ItemComparator());
+                    Collections.sort(history_text_list,new ItemComparator());
                     ListView listView=(ListView) findViewById(R.id.list_view);
                     myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,text_edit_list);
                     listView.setAdapter(myadapter);
@@ -121,18 +147,17 @@ public class MainActivity extends AppCompatActivity {
             case 0:
                 if (item_id==0) {
                     text_edit_list.remove(menuInfo.position);
+                    removed_cnt++;
                     myadapter.notifyDataSetChanged();
                     return true;
                 }
                 break;
             case 1:
                 if (item_id==0) {
-                    String input_data=null;
-                    Intent intent_fab=new Intent(MainActivity.this,text_edit_activity.class);
-                    intent_fab.putExtra("extra_data",input_data);
-                    intent_fab.putExtra("extra_boolean",false);
-                    startActivityForResult(intent_fab,1);//打开下一个界面并传入唯一标识符1
+                    findViewById(R.id.fab).performClick();//调用悬浮窗的点击函数
                 } else if (item_id==1) {
+                    Intent intent=new Intent(MainActivity.this, history_activity.class);
+                    startActivity(intent);
                     return true;
                 }
                 break;
