@@ -128,8 +128,8 @@ public class MainActivity extends AppCompatActivity {
                     item.setCreat_date(creat_date);//新条目原来未修改条目的创建时间
                     text_edit_list.add(item);
                     history_text_list.add(item);
-                    Collections.sort(text_edit_list, new ItemComparator());
-                    Collections.sort(history_text_list,new ItemComparator());
+                    Collections.sort(text_edit_list, new ItemComparator());//根据创建时间排序
+                    Collections.sort(history_text_list,new ItemComparator());//根据创建时间排序
                     ListView listView=(ListView) findViewById(R.id.list_view);
                     myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,text_edit_list);
                     listView.setAdapter(myadapter);
