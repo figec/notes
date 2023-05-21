@@ -23,6 +23,10 @@ public class Item {
     public void setCreat_date(Date creat_date){
         this.creat_date=creat_date;
     }
+
+    public void set_content(String content) {
+        this.content = content;
+    }
     public void setModify_date(Date creat_date){
         this.modify_date=new Date();
     }
