@@ -99,18 +99,26 @@ public class PinnedSectionBean {
                 e.printStackTrace();
             }
         }
-        //用迭代器遍历map添加到list里面
-        Iterator iterator = map.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry entry = (Map.Entry) iterator.next();
-            Item key = (Item) entry.getKey();
-            //我们的key（“三天内”等）作为标题.类别属于SECTION
-            list.add(new PinnedSectionBean(SECTION, key));
-            List<Item> li = (List<Item>) entry.getValue();
-            for (Item item : li) {
-                //对应的值(HH:mm:ss)作为标题下的item,类别属于ITEM
-                list.add(new PinnedSectionBean(ITEM, item));
-            }
+        //依次添加进list
+        list.add(new PinnedSectionBean(SECTION, item1));//三天内的item
+        List<Item> li = (List<Item>) map.get(item1);
+        for (Item item : li) {
+            list.add(new PinnedSectionBean(ITEM, item));
+        }
+        list.add(new PinnedSectionBean(SECTION, item2));//一周内的item
+        li = (List<Item>) map.get(item2);
+        for (Item item : li) {
+            list.add(new PinnedSectionBean(ITEM, item));
+        }
+        list.add(new PinnedSectionBean(SECTION, item3));//本月内的item
+        li = (List<Item>) map.get(item3);
+        for (Item item : li) {
+            list.add(new PinnedSectionBean(ITEM, item));
+        }
+        list.add(new PinnedSectionBean(SECTION, item4));//更久之前的item
+        li = (List<Item>) map.get(item4);
+        for (Item item : li) {
+            list.add(new PinnedSectionBean(ITEM, item));
         }
         //把分好类的hashmap添加到list里面便于显示
         return list;

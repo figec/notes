@@ -18,13 +18,13 @@ public class history_activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        ArrayList<PinnedSectionBean> real_data = new ArrayList<PinnedSectionBean>();
-        real_data = PinnedSectionBean.getData(MainActivity.history_text_list);
+        ArrayList<PinnedSectionBean> real_data = PinnedSectionBean.getData(MainActivity.history_text_list);
         history_adapter_new myadapter = new history_adapter_new(real_data, this);
         PinnedSectionListView listView = (PinnedSectionListView) findViewById(R.id.PinnedSectionListView);
         listView.setAdapter(myadapter);
 
-
+//以下被注释的是之前写得toast
+//感觉按时间段分类之后不需要这个，就直接注释掉了
 //        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 //            @Override
 //            public void onScrollStateChanged(AbsListView view, int scrollState) {

@@ -5,10 +5,13 @@ import com.example.memo.PinnedSectionListView.PinnedSectionListAdapter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 /**
@@ -57,33 +60,38 @@ public class history_adapter_new extends BaseAdapter implements PinnedSectionLis
         ViewHolder viewHolder = null;
         if (convertView == null) {
             viewHolder = new ViewHolder();
-            convertView = LayoutInflater.from(mContext).inflate(
-                    R.layout.historty_listview, null);
-            viewHolder.item_date = (TextView) convertView
-                    .findViewById(R.id.item_date);
-            viewHolder.item_content = (TextView) convertView
-                    .findViewById(R.id.item_content);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.historty_listview, null);
+            viewHolder.item_date = (TextView) convertView.findViewById(R.id.item_date);
+            viewHolder.item_content = (TextView) convertView.findViewById(R.id.item_content);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
         PinnedSectionBean bean =  getItem(position);
-        //当item属于标题的时候,就只显示分类的日期yyyy-MM-dd
+        //当item属于标题的时候,显示对应时间段
         if (bean.type == PinnedSectionBean.SECTION) {
-//            viewHolder.item_date.setText(list.get(position).getDetail().getAddtime());
             viewHolder.item_date.setText(bean.item.getContent());
         }
-        //当item属于内容的时候,就只显示分类的日期HH:mm:ss,和其他类容
+        //当item属于内容的时候,就显示时间和内容
         else{
-//            viewHolder.item_date.setText(list.get(position).getDetail().getAddtime());
-//            viewHolder.item_content.setText(list.get(position).getDetail().getContent());
             Item item = bean.item;
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
-            String formatted_Creatdate = formatter.format(item.getCreat_date());//修改创建时间格式
-            viewHolder.item_date.setText(formatted_Creatdate);
+            String formatted_Createdate = formatter.format(item.getCreat_date());//修改创建时间格式
+            viewHolder.item_date.setText(formatted_Createdate);
             int i = item.getContent().indexOf(' ');
             viewHolder.item_content.setText(item.getContent().substring(i+1));
+            if (item.getChecked()) {
+                //背景色设置为浅灰色
+                viewHolder.item_content.setBackgroundColor(Color.LTGRAY);
+                //增加删除线
+                viewHolder.item_content.setPaintFlags(viewHolder.item_content.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            } else {
+                //背景色变回白色
+                viewHolder.item_content.setBackgroundColor(Color.WHITE);
+                // 去除删除线
+                viewHolder.item_content.setPaintFlags(viewHolder.item_content.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            }
         }
         return convertView;
     }
