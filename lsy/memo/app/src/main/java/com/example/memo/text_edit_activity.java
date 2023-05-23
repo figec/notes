@@ -23,6 +23,16 @@ public class text_edit_activity extends AppCompatActivity {
             actionBar.hide();
         }
         editText=(EditText) findViewById(R.id.edit_text);
+        
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+        //设置接收类型为文本
+        if (Intent.ACTION_SEND.equals(action) && type != null){
+            if ("text/plain".equals(type)) {
+                handlerText(intent);
+            }
+        }
 
 
         Intent intent_input=getIntent();
@@ -54,5 +64,18 @@ public class text_edit_activity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+    private void handlerText(Intent intent) {
+        String data = intent.getStringExtra(Intent.EXTRA_TEXT);
+        Intent share_data=new Intent();
+        editText.setText(data);
+        Date create_Time=new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+        String formatted_Creatdate = formatter.format(create_Time);//修改创建时间格式
+        data=formatted_Creatdate+" "+ data;
+        Item item=new Item(data,false);
+        item.setCreat_date(create_Time);
+        text_edit_list.add(item);
+        MainActivity.myadapter.notifyDataSetChanged();
     }
 }
