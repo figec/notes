@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -75,7 +77,7 @@ public class text_edit_activity extends AppCompatActivity {
         data=formatted_Creatdate+" "+ data;
         Item item=new Item(data,false);
         item.setCreat_date(create_Time);
-        text_edit_list.add(item);
+        MainActivity.text_edit_list.add(item);
         MainActivity.myadapter.notifyDataSetChanged();
     }
 }
