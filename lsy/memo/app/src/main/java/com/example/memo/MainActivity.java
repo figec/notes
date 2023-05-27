@@ -31,11 +31,15 @@ public class MainActivity extends AppCompatActivity {
 
     protected static ArrayList<Item> text_edit_list=new ArrayList<Item>();
 
+    protected static ArrayList<Item> current_list;  // 存放筛选后的结果
+
     protected static Listview_Adapter myadapter;
 
     protected static ArrayList<Item> history_text_list = new ArrayList<Item>();
 
     protected static int removed_cnt = 0;
+
+    protected static int type = 0;// 当前显示的类型
 
     public static class ItemComparator implements Comparator<Item> {
 
@@ -102,35 +106,46 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.all:
                         bn.setText("全部 ▼");
-                        Toast.makeText(view.getContext(),"1",Toast.LENGTH_SHORT).show();
+                        type = Item.Default;
+                        current_list = (ArrayList<Item>)text_edit_list.clone();
+                        //current_list = new ArrayList<>(text_edit_list); // 浅拷贝
+                        //Toast.makeText(view.getContext(),"1",Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.iu:
                         bn.setText("重要且紧急 ▼");
-                        Toast.makeText(view.getContext(),"2",Toast.LENGTH_SHORT).show();
+                        type = Item.Important_Urgent;
+                        current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
+                        current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
                         break;
                     case R.id.inu:
                         bn.setText("重要非紧急 ▼");
-                        Toast.makeText(view.getContext(),"3",Toast.LENGTH_SHORT).show();
+                        type = Item.Important_NUrgent;
+                        current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
+                        current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
                         break;
                     case R.id.niu:
                         bn.setText("紧急非重要 ▼");
-                        Toast.makeText(view.getContext(),"4",Toast.LENGTH_SHORT).show();
+                        type = Item.Urgent_NImportant;
+                        current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
+                        current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
                         break;
                     case R.id.ninu:
                         bn.setText("非重要非紧急 ▼");
-                        popupMenu.dismiss();
+                        type = Item.NImportant_NUrgent;
+                        current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
+                        current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
                         break;
                 }
+                // 修改listview的显示
+                ListView listView=(ListView) findViewById(R.id.list_view);
+                myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,current_list);
+                listView.setAdapter(myadapter);
+                myadapter.notifyDataSetChanged();
+
                 return false;
             }
         });
-        //关闭事件
-        popupMenu.setOnDismissListener(new PopupMenu.OnDismissListener() {
-            @Override
-            public void onDismiss(PopupMenu menu) {
-                Toast.makeText(view.getContext(),"close",Toast.LENGTH_SHORT).show();
-            }
-        });
+
         //显示菜单，不要少了这一步
         popupMenu.show();
     }
@@ -156,21 +171,25 @@ public class MainActivity extends AppCompatActivity {
                     Collections.sort(text_edit_list, new ItemComparator());
                     Collections.sort(history_text_list,new ItemComparator());
                     ListView listView=(ListView) findViewById(R.id.list_view);
-                    myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,text_edit_list);
+                    current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
+                    if(type!=Item.Default){
+                        current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
+                    }
+                    myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,current_list);
                     listView.setAdapter(myadapter);
                     myadapter.notifyDataSetChanged();
                     //监听点击事件
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            String input_data= text_edit_list.get(i).getContent();
+                            String input_data= current_list.get(i).getContent();
                             Intent intent_list=new Intent(MainActivity.this,text_edit_activity.class);
                             intent_list.putExtra("extra_data",input_data);
-                            intent_list.putExtra("extra_boolean",text_edit_list.get(i).getChecked());
-                            intent_list.putExtra("CreatDate",text_edit_list.get(i).getCreat_date().getTime());//传入该项目的创建时间
-                            intent_list.putExtra("extra_style",text_edit_list.get(i).getStyle());
-                            text_edit_list.remove(i);
-                            history_text_list.remove(i+removed_cnt);
+                            intent_list.putExtra("extra_boolean",current_list.get(i).getChecked());
+                            intent_list.putExtra("CreatDate",current_list.get(i).getCreat_date().getTime());//传入该项目的创建时间
+                            intent_list.putExtra("extra_style",current_list.get(i).getStyle());
+                            text_edit_list.remove(text_edit_list.indexOf(current_list.get(i)));//
+                            //history_text_list.remove(text_edit_list.indexOf(current_list.get(i))+removed_cnt);
                             startActivityForResult(intent_list,2);//打开下一个界面并传入唯一标识符2
                         }
                     });
@@ -207,7 +226,11 @@ public class MainActivity extends AppCompatActivity {
                     Collections.sort(text_edit_list, new ItemComparator());//根据创建时间排序
                     Collections.sort(history_text_list,new ItemComparator());//根据创建时间排序
                     ListView listView=(ListView) findViewById(R.id.list_view);
-                    myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,text_edit_list);
+                    current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
+                    if(type!=Item.Default){
+                        current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
+                    }
+                    myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,current_list);
                     listView.setAdapter(myadapter);
 //                    }
                 }
