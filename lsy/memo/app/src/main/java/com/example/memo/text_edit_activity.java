@@ -62,7 +62,7 @@ public class text_edit_activity extends AppCompatActivity {
             editText.setText(input_data.toCharArray(),0,input_data.length());
         }
 
-        Toast.makeText(getApplicationContext(),"style值为："+String.valueOf(style),Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(),"style值为："+String.valueOf(style),Toast.LENGTH_SHORT).show();
 
         // 设置单选框初始值
         switch (style){

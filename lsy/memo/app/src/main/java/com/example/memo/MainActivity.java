@@ -188,8 +188,11 @@ public class MainActivity extends AppCompatActivity {
                             intent_list.putExtra("extra_boolean",current_list.get(i).getChecked());
                             intent_list.putExtra("CreatDate",current_list.get(i).getCreat_date().getTime());//传入该项目的创建时间
                             intent_list.putExtra("extra_style",current_list.get(i).getStyle());
-                            text_edit_list.remove(text_edit_list.indexOf(current_list.get(i)));//
-                            //history_text_list.remove(text_edit_list.indexOf(current_list.get(i))+removed_cnt);
+                            int place = text_edit_list.indexOf(current_list.get(i)); // 转换后的位置
+                            text_edit_list.remove(place);//
+                            //Toast.makeText(view.getContext(),"i:"+Integer.toString(text_edit_list.indexOf(current_list.get(i))),Toast.LENGTH_SHORT).show();
+                            history_text_list.remove(place+removed_cnt);
+
                             startActivityForResult(intent_list,2);//打开下一个界面并传入唯一标识符2
                         }
                     });
