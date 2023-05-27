@@ -27,11 +27,7 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int all_MENU = 0;
-    private static final int Important_Urgent_MENU = 1;
-    private static final int Important_NUrgent_MENU = 2;
-    private static final int Urgent_NImportant_MENU = 3;
-    private static final int NImportant_NUrgent_MENU = 4;
+
 
     protected static ArrayList<Item> text_edit_list=new ArrayList<Item>();
 
@@ -66,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent_fab=new Intent(MainActivity.this,text_edit_activity.class);
                 intent_fab.putExtra("extra_data",input_data);
                 intent_fab.putExtra("extra_boolean",false);
+                intent_fab.putExtra("extra_style",Item.Default);
                 startActivityForResult(intent_fab,1);//打开下一个界面并传入唯一标识符1
             }
         });
@@ -150,8 +147,10 @@ public class MainActivity extends AppCompatActivity {
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
                     String formatted_Creatdate = formatter.format(creat_date);//修改创建时间格式
                     returndata=formatted_Creatdate+" "+returndata;//给回传文本加上时间内容
+                    int style = data.getIntExtra("data_return_style",Item.Default); //获取单选框编号
                     Item item = new Item(returndata,false); //这里是新建后的返回，直接用false
                     item.setCreat_date(creat_date);//传入创建时间
+                    item.setStyle(style);
                     text_edit_list.add(item);
                     history_text_list.add(item);
                     Collections.sort(text_edit_list, new ItemComparator());
@@ -169,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
                             intent_list.putExtra("extra_data",input_data);
                             intent_list.putExtra("extra_boolean",text_edit_list.get(i).getChecked());
                             intent_list.putExtra("CreatDate",text_edit_list.get(i).getCreat_date().getTime());//传入该项目的创建时间
+                            intent_list.putExtra("extra_style",text_edit_list.get(i).getStyle());
                             text_edit_list.remove(i);
                             history_text_list.remove(i+removed_cnt);
                             startActivityForResult(intent_list,2);//打开下一个界面并传入唯一标识符2
@@ -197,7 +197,9 @@ public class MainActivity extends AppCompatActivity {
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
                     String formatted_ModifyDate = formatter.format(modify_date);
                     returndata=formatted_ModifyDate+" "+returndata;
+                    int style = data.getIntExtra("data_return_style",Item.Default); //获取单选框编号
                     Item item = new Item(returndata,checked);
+                    item.setStyle(style);
                     item.setModify_date(modify_date);//设置最新修改时间
                     item.setCreat_date(creat_date);//新条目原来未修改条目的创建时间
                     text_edit_list.add(item);
