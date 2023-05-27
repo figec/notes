@@ -1,14 +1,21 @@
 package com.example.memo;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.Toast;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Collection;
@@ -20,6 +27,12 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int all_MENU = 0;
+    private static final int Important_Urgent_MENU = 1;
+    private static final int Important_NUrgent_MENU = 2;
+    private static final int Urgent_NImportant_MENU = 3;
+    private static final int NImportant_NUrgent_MENU = 4;
+
     protected static ArrayList<Item> text_edit_list=new ArrayList<Item>();
 
     protected static Listview_Adapter myadapter;
@@ -29,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
     protected static int removed_cnt = 0;
 
     public static class ItemComparator implements Comparator<Item> {
+
+
         @Override
         public int compare(Item item1, Item item2) {
             // 按照创建时间从后到先排序
@@ -64,6 +79,63 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        // 索引按钮响应
+        Button index=(Button) findViewById(R.id.select_button);
+        index.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPopupMenu(index);
+
+            }
+        });
+
+
+    }
+
+    //弹出菜单的按钮框
+    private void showPopupMenu(final View view) {
+        Button bn = (Button)findViewById(R.id.select_button);
+        final PopupMenu popupMenu = new PopupMenu(this,view);
+        //menu 布局
+        popupMenu.getMenuInflater().inflate(R.menu.select_menu,popupMenu.getMenu());
+        //点击事件
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.all:
+                        bn.setText("全部 ▼");
+                        Toast.makeText(view.getContext(),"1",Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.iu:
+                        bn.setText("重要且紧急 ▼");
+                        Toast.makeText(view.getContext(),"2",Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.inu:
+                        bn.setText("重要非紧急 ▼");
+                        Toast.makeText(view.getContext(),"3",Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.niu:
+                        bn.setText("紧急非重要 ▼");
+                        Toast.makeText(view.getContext(),"4",Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.ninu:
+                        bn.setText("非重要非紧急 ▼");
+                        popupMenu.dismiss();
+                        break;
+                }
+                return false;
+            }
+        });
+        //关闭事件
+        popupMenu.setOnDismissListener(new PopupMenu.OnDismissListener() {
+            @Override
+            public void onDismiss(PopupMenu menu) {
+                Toast.makeText(view.getContext(),"close",Toast.LENGTH_SHORT).show();
+            }
+        });
+        //显示菜单，不要少了这一步
+        popupMenu.show();
     }
 
 

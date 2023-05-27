@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="全部"
+        android:id="@+id/all"
+
+        />
+    <item
+        android:title="重要且紧急"
+        android:id="@+id/iu"
+
+        />
+
+    <item
+        android:title="重要非紧急"
+        android:id="@+id/inu"
+        />
+    <item
+        android:title="紧急非重要"
+        android:id="@+id/niu"
+        />
+    <item
+        android:title="非重要非紧急"
+        android:id="@+id/ninu"
+
+        />
+</menu>
+
+
