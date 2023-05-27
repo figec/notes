@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
                 contextMenu.add(1,1,0,"历史笔记");//进入隐式文档
             }
         });
+
+
     }
 
 
