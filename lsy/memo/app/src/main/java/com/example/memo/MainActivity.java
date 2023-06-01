@@ -1,14 +1,21 @@
 package com.example.memo;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.PopupMenu;
+import android.widget.Toast;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Collection;
@@ -20,7 +27,11 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
+
+
     protected static ArrayList<Item> text_edit_list=new ArrayList<Item>();
+
+    protected static ArrayList<Item> current_list;  // 存放筛选后的结果
 
     protected static Listview_Adapter myadapter;
 
@@ -28,7 +39,11 @@ public class MainActivity extends AppCompatActivity {
 
     protected static int removed_cnt = 0;
 
+    protected static int type = 0;// 当前显示的类型
+
     public static class ItemComparator implements Comparator<Item> {
+
+
         @Override
         public int compare(Item item1, Item item2) {
             // 按照创建时间从后到先排序
@@ -51,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent_fab=new Intent(MainActivity.this,text_edit_activity.class);
                 intent_fab.putExtra("extra_data",input_data);
                 intent_fab.putExtra("extra_boolean",false);
+                intent_fab.putExtra("extra_style",Item.Default);
                 startActivityForResult(intent_fab,1);//打开下一个界面并传入唯一标识符1
             }
         });
@@ -62,6 +78,76 @@ public class MainActivity extends AppCompatActivity {
                 contextMenu.add(1,1,0,"历史笔记");//进入隐式文档
             }
         });
+
+
+        // 索引按钮响应
+        Button index=(Button) findViewById(R.id.select_button);
+        index.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPopupMenu(index);
+
+            }
+        });
+
+
+    }
+
+    //弹出菜单的按钮框
+    private void showPopupMenu(final View view) {
+        Button bn = (Button)findViewById(R.id.select_button);
+        final PopupMenu popupMenu = new PopupMenu(this,view);
+        //menu 布局
+        popupMenu.getMenuInflater().inflate(R.menu.select_menu,popupMenu.getMenu());
+        //点击事件
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.all:
+                        bn.setText("全部 ▼");
+                        type = Item.Default;
+                        current_list = (ArrayList<Item>)text_edit_list.clone();
+                        //current_list = new ArrayList<>(text_edit_list); // 浅拷贝
+                        //Toast.makeText(view.getContext(),"1",Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.iu:
+                        bn.setText("重要且紧急 ▼");
+                        type = Item.Important_Urgent;
+                        current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
+                        current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
+                        break;
+                    case R.id.inu:
+                        bn.setText("重要非紧急 ▼");
+                        type = Item.Important_NUrgent;
+                        current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
+                        current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
+                        break;
+                    case R.id.niu:
+                        bn.setText("紧急非重要 ▼");
+                        type = Item.Urgent_NImportant;
+                        current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
+                        current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
+                        break;
+                    case R.id.ninu:
+                        bn.setText("非重要非紧急 ▼");
+                        type = Item.NImportant_NUrgent;
+                        current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
+                        current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
+                        break;
+                }
+                // 修改listview的显示
+                ListView listView=(ListView) findViewById(R.id.list_view);
+                myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,current_list);
+                listView.setAdapter(myadapter);
+                myadapter.notifyDataSetChanged();
+
+                return false;
+            }
+        });
+
+        //显示菜单，不要少了这一步
+        popupMenu.show();
     }
 
 
@@ -76,27 +162,37 @@ public class MainActivity extends AppCompatActivity {
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
                     String formatted_Creatdate = formatter.format(creat_date);//修改创建时间格式
                     returndata=formatted_Creatdate+" "+returndata;//给回传文本加上时间内容
+                    int style = data.getIntExtra("data_return_style",Item.Default); //获取单选框编号
                     Item item = new Item(returndata,false); //这里是新建后的返回，直接用false
                     item.setCreat_date(creat_date);//传入创建时间
+                    item.setStyle(style);
                     text_edit_list.add(item);
                     history_text_list.add(item);
                     Collections.sort(text_edit_list, new ItemComparator());
                     Collections.sort(history_text_list,new ItemComparator());
                     ListView listView=(ListView) findViewById(R.id.list_view);
-                    myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,text_edit_list);
+                    current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
+                    if(type!=Item.Default){
+                        current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
+                    }
+                    myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,current_list);
                     listView.setAdapter(myadapter);
                     myadapter.notifyDataSetChanged();
                     //监听点击事件
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            String input_data= text_edit_list.get(i).getContent();
+                            String input_data= current_list.get(i).getContent();
                             Intent intent_list=new Intent(MainActivity.this,text_edit_activity.class);
                             intent_list.putExtra("extra_data",input_data);
-                            intent_list.putExtra("extra_boolean",text_edit_list.get(i).getChecked());
-                            intent_list.putExtra("CreatDate",text_edit_list.get(i).getCreat_date().getTime());//传入该项目的创建时间
-                            text_edit_list.remove(i);
-                            history_text_list.remove(i+removed_cnt);
+                            intent_list.putExtra("extra_boolean",current_list.get(i).getChecked());
+                            intent_list.putExtra("CreatDate",current_list.get(i).getCreat_date().getTime());//传入该项目的创建时间
+                            intent_list.putExtra("extra_style",current_list.get(i).getStyle());
+                            int place = text_edit_list.indexOf(current_list.get(i)); // 转换后的位置
+                            text_edit_list.remove(place);//
+                            //Toast.makeText(view.getContext(),"i:"+Integer.toString(text_edit_list.indexOf(current_list.get(i))),Toast.LENGTH_SHORT).show();
+                            history_text_list.remove(place+removed_cnt);
+
                             startActivityForResult(intent_list,2);//打开下一个界面并传入唯一标识符2
                         }
                     });
@@ -123,7 +219,9 @@ public class MainActivity extends AppCompatActivity {
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
                     String formatted_ModifyDate = formatter.format(modify_date);
                     returndata=formatted_ModifyDate+" "+returndata;
+                    int style = data.getIntExtra("data_return_style",Item.Default); //获取单选框编号
                     Item item = new Item(returndata,checked);
+                    item.setStyle(style);
                     item.setModify_date(modify_date);//设置最新修改时间
                     item.setCreat_date(creat_date);//新条目原来未修改条目的创建时间
                     text_edit_list.add(item);
@@ -131,7 +229,11 @@ public class MainActivity extends AppCompatActivity {
                     Collections.sort(text_edit_list, new ItemComparator());//根据创建时间排序
                     Collections.sort(history_text_list,new ItemComparator());//根据创建时间排序
                     ListView listView=(ListView) findViewById(R.id.list_view);
-                    myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,text_edit_list);
+                    current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
+                    if(type!=Item.Default){
+                        current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
+                    }
+                    myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,current_list);
                     listView.setAdapter(myadapter);
 //                    }
                 }
