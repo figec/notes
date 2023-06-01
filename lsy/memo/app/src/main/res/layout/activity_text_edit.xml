@@ -34,4 +34,47 @@
         app:layout_constraintVertical_bias="0.08"
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="0dp" />
+
+
+    <RadioGroup
+        android:id="@+id/rg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="300dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.285"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <RadioButton
+            android:id="@+id/import_urgent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="重要且紧急" />
+
+        <RadioButton
+            android:id="@+id/import_Nurgent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="重要非紧急" />
+
+        <RadioButton
+            android:id="@+id/Nimport_urgent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="紧急非重要" />
+
+        <RadioButton
+            android:id="@+id/Nimport_Nurgent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="非重要非紧急" />
+    </RadioGroup>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
