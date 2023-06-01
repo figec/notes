@@ -67,7 +67,7 @@ public class history_adapter_new extends BaseAdapter implements PinnedSectionLis
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-
+        SimpleDateFormat formatter = null;
         PinnedSectionBean bean =  getItem(position);
         //当item属于标题的时候,显示对应时间段
         if (bean.type == PinnedSectionBean.SECTION) {
@@ -76,7 +76,23 @@ public class history_adapter_new extends BaseAdapter implements PinnedSectionLis
         //当item属于内容的时候,就显示时间和内容
         else{
             Item item = bean.item;
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+            switch (bean.item.create_period) {
+                case 1:
+                    formatter = new SimpleDateFormat("MM-dd HH:mm:ss");
+                    break;
+                case 2:
+                    formatter = new SimpleDateFormat("MM-dd HH:mm:ss");
+                    break;
+                case 3:
+                    formatter = new SimpleDateFormat("yyyy-MM-dd");
+                    break;
+                case 4:
+                    formatter = new SimpleDateFormat("yyyy-MM-dd");
+                    break;
+                default:
+                    formatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+                    break;
+            }
             String formatted_Createdate = formatter.format(item.getCreat_date());//修改创建时间格式
             viewHolder.item_date.setText(formatted_Createdate);
             int i = item.getContent().indexOf(' ');

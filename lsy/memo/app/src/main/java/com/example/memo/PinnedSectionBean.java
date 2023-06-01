@@ -75,7 +75,7 @@ public class PinnedSectionBean {
 
         //共设置四个划分时间段，分别为三天内、一周内（三天内之外）、本月内（前两者之外，一个月定 30 天）与更久之前
         Map<Item, List<Item>> map = new HashMap<>();
-        Item item1 = new Item("三天内", false), item2 = new Item("一周内", false),item3 = new Item("本月内", false),item4 = new Item("更久之前", false);
+        Item item1 = new Item("三天内", false), item2 = new Item("一周内", false),item3 = new Item("一个月内", false),item4 = new Item("更久之前", false);
         map.put(item1,new ArrayList<Item>());
         map.put(item2,new ArrayList<Item>());
         map.put(item3,new ArrayList<Item>());
@@ -87,12 +87,16 @@ public class PinnedSectionBean {
                 LocalDate startLocalDate = history_text.get(i).getCreat_date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                 long daysCount = ChronoUnit.DAYS.between(startLocalDate, localDate);
                 if (daysCount <= 3) {
+                    history_text.get(i).set_create_period(1);
                     map.get(item1).add(history_text.get(i));
                 } else if (daysCount <= 7) {
+                    history_text.get(i).set_create_period(2);
                     map.get(item2).add(history_text.get(i));
                 } else if (daysCount <= 30) {
+                    history_text.get(i).set_create_period(3);
                     map.get(item3).add(history_text.get(i));
                 } else {
+                    history_text.get(i).set_create_period(4);
                     map.get(item4).add(history_text.get(i));
                 }
             } catch (Exception e) {
@@ -110,7 +114,7 @@ public class PinnedSectionBean {
         for (Item item : li) {
             list.add(new PinnedSectionBean(ITEM, item));
         }
-        list.add(new PinnedSectionBean(SECTION, item3));//本月内的item
+        list.add(new PinnedSectionBean(SECTION, item3));//一个月内的item
         li = (List<Item>) map.get(item3);
         for (Item item : li) {
             list.add(new PinnedSectionBean(ITEM, item));
