@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="5dp"
-        android:backgroundTint="#535c68"
+        android:backgroundTint="@color/darkGreen"
         android:text="保存"
         android:textAlignment="center"
         android:textColor="#FFFFFF"
