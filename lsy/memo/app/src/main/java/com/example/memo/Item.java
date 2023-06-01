@@ -19,6 +19,9 @@ public class Item {
     protected static final int Important_NUrgent = 2;
     protected static final int Urgent_NImportant = 3;
     protected static final int NImportant_NUrgent = 4;
+
+    // 创建时间段，三天内、一周内、一个月内和更久之前分别对应1、2、3和4
+    protected int create_period;
     private String content;
     private boolean checked;
     private Date creat_date=new Date();
@@ -40,6 +43,11 @@ public class Item {
     }
     public void setModify_date(Date creat_date){
         this.modify_date=new Date();
+    }
+
+    //设置创建时间段
+    public void set_create_period(int n) {
+        this.create_period = n;
     }
 
 
