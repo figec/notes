@@ -22,19 +22,22 @@ import java.util.List;
 
 public class Listview_Adapter extends ArrayAdapter<Item> {
     private int resourceId;
-
     public Listview_Adapter(Context context, int textViewResourceId, List<Item> objects){
         super(context,textViewResourceId,objects);
         resourceId = textViewResourceId;
-
     }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent){
         Item item = getItem(position);
         View view = LayoutInflater.from(getContext()).inflate(resourceId,parent,false);
         TextView content = (TextView) view.findViewById(R.id.item_string);
-        content.setText(item.getContent());
+        String text_time=item.getContent();
+        int i=text_time.indexOf(" ");
+        String text=text_time.substring(i+1);//扔掉时间变量
+        String time=text_time.substring(0,i);
+        content.setText(text);
+        TextView time_view = (TextView) view.findViewById(R.id.item_time);
+        time_view.setText(time);
         CheckBox check = (CheckBox) view.findViewById(R.id.ck);
         check.setChecked(item.getChecked());
 
@@ -54,7 +57,6 @@ public class Listview_Adapter extends ArrayAdapter<Item> {
                 break;
             default:
                 break;
-
         }
 
 

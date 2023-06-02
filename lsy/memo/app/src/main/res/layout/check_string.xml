@@ -1,24 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:descendantFocusability="blocksDescendants"
-    >
-
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants">
 
     <CheckBox
         android:id="@+id/ck"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="5dp"
         android:checked="false"
         android:focusable="false"
-        />
+        android:padding="5dp"/>
 
     <TextView
         android:id="@+id/item_string"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/ck"
+        android:layout_marginStart="10dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="5dp"
+        android:ellipsize="end"
+        android:textSize="14sp"
+        android:maxLines="2"
+        android:text="This is a very long item string that needs to be truncated"/>
+
+    <TextView
+        android:id="@+id/item_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        />
-</LinearLayout>
+        android:textSize="10sp"
+        android:layout_below="@id/item_string"
+        android:layout_alignStart="@id/item_string"
+        android:layout_marginTop="2dp"
+        android:textColor="#66B2FF"
+        android:textStyle="italic" />
+
+
+
+
+</RelativeLayout>

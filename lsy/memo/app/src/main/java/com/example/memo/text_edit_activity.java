@@ -148,7 +148,7 @@ public class text_edit_activity extends AppCompatActivity {
         Intent share_data=new Intent();
         editText.setText(data);
         Date create_Time=new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         String formatted_Creatdate = formatter.format(create_Time);//修改创建时间格式
         data=formatted_Creatdate+" "+ data;
         Item item=new Item(data,false);

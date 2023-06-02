@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                 if(resultCode==RESULT_OK){
                     String returndata=data.getStringExtra("data_return");//获得用户输入的数据
                     Date creat_date=new Date();//获取创建时间
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                     String formatted_Creatdate = formatter.format(creat_date);//修改创建时间格式
                     returndata=formatted_Creatdate+" "+returndata;//给回传文本加上时间内容
                     int style = data.getIntExtra("data_return_style",Item.Default); //获取单选框编号
@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                     long l_Creat_Date = data.getLongExtra("Return_CreatDate", 0);
                     Date creat_date = new Date(l_Creat_Date);//接受原来条目的创建时间
                     Date modify_date=new Date();
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                     String formatted_ModifyDate = formatter.format(modify_date);
                     returndata=formatted_ModifyDate+" "+returndata;
                     int style = data.getIntExtra("data_return_style",Item.Default); //获取单选框编号
