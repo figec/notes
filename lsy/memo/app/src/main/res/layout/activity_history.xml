@@ -5,8 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".history_activity">
-    <ListView
+
+    <com.example.memo.PinnedSectionListView
+        android:id="@+id/PinnedSectionListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/list_view_2"/>
+        android:scrollbars="none">
+    </com.example.memo.PinnedSectionListView
+>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

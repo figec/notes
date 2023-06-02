@@ -37,6 +37,27 @@ public class Listview_Adapter extends ArrayAdapter<Item> {
         content.setText(item.getContent());
         CheckBox check = (CheckBox) view.findViewById(R.id.ck);
         check.setChecked(item.getChecked());
+
+        //根据笔记类型设置背景颜色等
+        switch (item.getStyle()) {
+            case Item.Important_Urgent:
+                view.setBackgroundColor(Color.parseColor("#f0d9e1"));
+                break;
+            case Item.Important_NUrgent:
+                view.setBackgroundColor(Color.parseColor("#cef9f0"));
+                break;
+            case Item.Urgent_NImportant:
+                view.setBackgroundColor(Color.parseColor("#fff5ca"));
+                break;
+            case Item.NImportant_NUrgent:
+                view.setBackgroundColor(Color.parseColor("#e6f7ff"));
+                break;
+            default:
+                break;
+
+        }
+
+
         // 对checked下的基础样式设置
         if(item.getChecked()==true){
             content.setBackgroundColor(Color.LTGRAY);

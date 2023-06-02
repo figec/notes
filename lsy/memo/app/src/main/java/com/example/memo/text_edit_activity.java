@@ -7,12 +7,24 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 public class text_edit_activity extends AppCompatActivity {
     private EditText editText;
     private boolean checked;
+
+    private RadioGroup radioGroup;
+    private RadioButton radioButton; //单选按钮
+
+    private int style;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,17 +37,92 @@ public class text_edit_activity extends AppCompatActivity {
         editText=(EditText) findViewById(R.id.edit_text);
 
 
+
+        
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+        //设置接收类型为文本
+        if (Intent.ACTION_SEND.equals(action) && type != null){
+            if ("text/plain".equals(type)) {
+                handlerText(intent);
+            }
+        }
+
+
         Intent intent_input=getIntent();
         String input_data=intent_input.getStringExtra("extra_data");
         checked = intent_input.getBooleanExtra("extra_boolean",false);
         long l_Creat_Date = getIntent().getLongExtra("CreatDate", 0);
         Date Creat_date = new Date(l_Creat_Date);//接受该项目的传入时间
+        style = intent_input.getIntExtra("extra_style",Item.Default);
         if (input_data!=null){//设置文本框初始值
             int i=input_data.indexOf(" ");
             input_data=input_data.substring(i+1);//扔掉时间变量
             editText.setText(input_data.toCharArray(),0,input_data.length());
         }
-        //点击悬浮窗后做的响应
+
+        //Toast.makeText(getApplicationContext(),"style值为："+String.valueOf(style),Toast.LENGTH_SHORT).show();
+
+        // 设置单选框初始值
+        switch (style){
+            case Item.Important_Urgent:
+                radioButton = (RadioButton) findViewById(R.id.import_urgent);
+                radioButton.setChecked(true);
+                break;
+            case Item.Important_NUrgent:
+                radioButton = (RadioButton) findViewById(R.id.import_Nurgent);
+                radioButton.setChecked(true);
+                break;
+            case Item.Urgent_NImportant:
+                radioButton = (RadioButton) findViewById(R.id.Nimport_urgent);
+                radioButton.setChecked(true);
+                break;
+            case Item.NImportant_NUrgent:
+                radioButton = (RadioButton) findViewById(R.id.Nimport_Nurgent);
+                radioButton.setChecked(true);
+                break;
+            default:
+
+                break;
+        }
+
+
+        // 监听单选框组的点击变化，修改值
+        radioGroup = (RadioGroup) findViewById(R.id.rg);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener(){
+            public void onCheckedChanged(RadioGroup group,int checkedId){
+                //获取被选中的radiobutton的id
+                radioButton = (RadioButton) findViewById(checkedId);
+                //获取信息
+                String checkText = radioButton.getText().toString();
+                //将信息映射到int 0-4之间
+                switch (checkText){
+                    case "重要且紧急":
+                        style = Item.Important_Urgent;
+                        break;
+                    case "重要非紧急":
+                        style = Item.Important_NUrgent;
+                        break;
+                    case "紧急非重要":
+                        style = Item.Urgent_NImportant;
+                        break;
+                    case "非重要非紧急":
+                        style = Item.NImportant_NUrgent;
+                        break;
+                    default:
+                        style = Item.Default;
+                        break;
+                }
+
+
+            }
+
+        });
+
+
+
+        //点击按钮后做的响应
         Button save=(Button) findViewById(R.id.title_save);
         save.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,10 +136,24 @@ public class text_edit_activity extends AppCompatActivity {
                     intent_output.putExtra("data_return",returndata);
                     intent_output.putExtra("data_return_boolean",checked);
                     intent_output.putExtra("Return_CreatDate",Creat_date.getTime());
+                    intent_output.putExtra("data_return_style",style);
                     setResult(RESULT_OK,intent_output);
                 }
                 finish();
             }
         });
+    }
+    private void handlerText(Intent intent) {
+        String data = intent.getStringExtra(Intent.EXTRA_TEXT);
+        Intent share_data=new Intent();
+        editText.setText(data);
+        Date create_Time=new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+        String formatted_Creatdate = formatter.format(create_Time);//修改创建时间格式
+        data=formatted_Creatdate+" "+ data;
+        Item item=new Item(data,false);
+        item.setCreat_date(create_Time);
+        MainActivity.text_edit_list.add(item);
+        MainActivity.myadapter.notifyDataSetChanged();
     }
 }
