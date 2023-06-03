@@ -4,6 +4,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -18,6 +19,12 @@ import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -41,6 +48,14 @@ public class MainActivity extends AppCompatActivity {
 
     protected static int type = 0;// 当前显示的类型
 
+    protected static int isInit = 0;//是否为第一次打开进行操作，当为0时，重量数据不需要进行读取操作。当为1时，才需要进行读取操作
+
+    //轻量级的数据存取方式,并设置为仅能在改程序下进行读取操作
+    SharedPreferences sharedPreferences; //= getSharedPreferences("light_data", MODE_PRIVATE);
+    //SharedPreferences sharedPreferences = getPreferences( MODE_PRIVATE);
+
+    //编辑器
+    private SharedPreferences.Editor editor; //= sharedPreferences.edit();
     public static class ItemComparator implements Comparator<Item> {
 
 
@@ -56,6 +71,74 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // 数据初始化
+        //读写器初始化
+        sharedPreferences = getSharedPreferences("light_data", MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+        // 读取轻量级数据
+        type = sharedPreferences.getInt("type",0);
+        removed_cnt = sharedPreferences.getInt("removed_cnt",0);
+        isInit = sharedPreferences.getInt("isInit",0);
+        //Toast.makeText(getApplicationContext(),"读取的type值为："+Integer.toString(type),Toast.LENGTH_SHORT).show();
+        
+        if(isInit==0){
+            //
+            ObjectOutputStream objectOutputStream = null;   //序列化写入文件
+            File file = new File(getFilesDir().getAbsolutePath(),"text_edit_list.txt");
+            File history_file = new File(getFilesDir().getAbsolutePath(),"history_text_list.txt");
+
+            if(!file.exists()){
+                // 文件夹不存在，则去创建对应的文件夹
+                File ff = new File(file.getParent());
+                ff.mkdirs();
+                try {
+                    file.createNewFile(); // 创建文件
+                    history_file.createNewFile();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            try {
+                objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+                objectOutputStream.writeObject(text_edit_list);
+                objectOutputStream.close();
+
+                objectOutputStream = new ObjectOutputStream(new FileOutputStream(history_file));
+                objectOutputStream.writeObject(history_text_list);
+                objectOutputStream.close();
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            isInit = 1;
+            editor.putInt("isInit",isInit);
+            editor.commit();
+
+            
+        }
+        else{
+            // 进行反序列化
+            get_text_list();
+            get_history_list();
+
+
+
+        }
+
+        // 使用初始化数据
+        ListView listView=(ListView) findViewById(R.id.list_view);
+        current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
+        if(type!=Item.Default){
+            current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
+        }
+        myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,current_list);
+        listView.setAdapter(myadapter);
+
+
+
+
 
         //悬浮窗按钮
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -108,6 +191,9 @@ public class MainActivity extends AppCompatActivity {
                         bn.setText("全部 ▼");
                         type = Item.Default;
                         current_list = (ArrayList<Item>)text_edit_list.clone();
+                        //修改数据存储
+                        editor.putInt("type",type);
+                        editor.commit();
                         //current_list = new ArrayList<>(text_edit_list); // 浅拷贝
                         //Toast.makeText(view.getContext(),"1",Toast.LENGTH_SHORT).show();
                         break;
@@ -116,24 +202,36 @@ public class MainActivity extends AppCompatActivity {
                         type = Item.Important_Urgent;
                         current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
                         current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
+
+                        editor.putInt("type",type);
+                        editor.commit();
                         break;
                     case R.id.inu:
                         bn.setText("重要非紧急 ▼");
                         type = Item.Important_NUrgent;
                         current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
                         current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
+
+                        editor.putInt("type",type);
+                        editor.commit();
                         break;
                     case R.id.niu:
                         bn.setText("紧急非重要 ▼");
                         type = Item.Urgent_NImportant;
                         current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
                         current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
+
+                        editor.putInt("type",type);
+                        editor.commit();
                         break;
                     case R.id.ninu:
                         bn.setText("非重要非紧急 ▼");
                         type = Item.NImportant_NUrgent;
                         current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
                         current_list.removeIf(e -> e.getStyle()!=type); // 进行筛选
+
+                        editor.putInt("type",type);
+                        editor.commit();
                         break;
                 }
                 // 修改listview的显示
@@ -167,7 +265,9 @@ public class MainActivity extends AppCompatActivity {
                     item.setCreat_date(creat_date);//传入创建时间
                     item.setStyle(style);
                     text_edit_list.add(item);
+                    save_text_list();
                     history_text_list.add(item);
+                    save_history_list();
                     Collections.sort(text_edit_list, new ItemComparator());
                     Collections.sort(history_text_list,new ItemComparator());
                     ListView listView=(ListView) findViewById(R.id.list_view);
@@ -192,6 +292,7 @@ public class MainActivity extends AppCompatActivity {
                             text_edit_list.remove(place);//
                             //Toast.makeText(view.getContext(),"i:"+Integer.toString(text_edit_list.indexOf(current_list.get(i))),Toast.LENGTH_SHORT).show();
                             history_text_list.remove(place+removed_cnt);
+                            save_history_list();
 
                             startActivityForResult(intent_list,2);//打开下一个界面并传入唯一标识符2
                         }
@@ -225,7 +326,9 @@ public class MainActivity extends AppCompatActivity {
                     item.setModify_date(modify_date);//设置最新修改时间
                     item.setCreat_date(creat_date);//新条目原来未修改条目的创建时间
                     text_edit_list.add(item);
+                    save_text_list();
                     history_text_list.add(item);
+                    save_history_list();
                     Collections.sort(text_edit_list, new ItemComparator());//根据创建时间排序
                     Collections.sort(history_text_list,new ItemComparator());//根据创建时间排序
                     ListView listView=(ListView) findViewById(R.id.list_view);
@@ -249,7 +352,10 @@ public class MainActivity extends AppCompatActivity {
             case 0:
                 if (item_id==0) {
                     text_edit_list.remove(menuInfo.position);
+                    save_text_list();
                     removed_cnt++;
+                    editor.putInt("removed_cnt",removed_cnt);
+                    editor.commit();
                     myadapter.notifyDataSetChanged();
                     return true;
                 }
@@ -267,4 +373,62 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onContextItemSelected(item);
     }
+
+    // 保存对应的ArrayList
+    public void save_text_list(){
+        ObjectOutputStream objectOutputStream = null;   //序列化写入文件
+        File file = new File(getFilesDir().getAbsolutePath(),"text_edit_list.txt");
+        try {
+            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+            objectOutputStream.writeObject(text_edit_list);
+            objectOutputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void save_history_list(){
+        ObjectOutputStream objectOutputStream = null;   //序列化写入文件
+        File file = new File(getFilesDir().getAbsolutePath(),"history_text_list.txt");
+        try {
+            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+            objectOutputStream.writeObject(history_text_list);
+            objectOutputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // 读取对应的ArrayList
+    private void get_text_list(){
+        File file = new File(getFilesDir().getAbsolutePath(),"text_edit_list.txt");
+        ObjectInputStream objectInputStream = null; //反序列化 从文件中读出来
+        try {
+            objectInputStream = new ObjectInputStream(new FileInputStream(file));
+            text_edit_list = (ArrayList<Item>)objectInputStream.readObject();
+            objectInputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private void get_history_list(){
+        File file = new File(getFilesDir().getAbsolutePath(),"history_text_list.txt");
+        ObjectInputStream objectInputStream = null; //反序列化 从文件中读出来
+        try {
+            objectInputStream = new ObjectInputStream(new FileInputStream(file));
+            history_text_list = (ArrayList<Item>)objectInputStream.readObject();
+            objectInputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
 }

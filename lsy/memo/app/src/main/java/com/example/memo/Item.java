@@ -1,6 +1,7 @@
 package com.example.memo;
 
 
+import java.io.Serializable;
 import java.sql.DatabaseMetaData;
 import java.util.Date;
 
@@ -11,7 +12,10 @@ import java.util.Date;
  * checked标识对应项一起的复选框的选择状态，true为勾选状态
  * 添加style属性，作为分类
  */
-public class Item {
+public class Item implements Serializable {
+
+    //序列化ID  以便实现序列化
+    private static final long serialVersionUID = -5809782578272943999L;
 
     //类别分别
     protected static final int Default = 0;   // 不设置轻重急缓的分类
