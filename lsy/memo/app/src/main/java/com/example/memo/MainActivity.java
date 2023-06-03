@@ -190,7 +190,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent_list,2);//打开下一个界面并传入唯一标识符2
             }
         });
-
+        listView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+                menu.setHeaderTitle("长按菜单-ContextMenu");
+                menu.add(0, 0, 0, "删除");//组，id,顺序，内容
+                menu.add(0, 1, 0, "其他功能");
+            }
+        });
     }
 
     //弹出菜单的按钮框
