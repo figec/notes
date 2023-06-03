@@ -116,14 +116,11 @@ public class MainActivity extends AppCompatActivity {
             editor.putInt("isInit",isInit);
             editor.commit();
 
-            
         }
         else{
             // 进行反序列化
             get_text_list();
             get_history_list();
-
-
 
         }
 

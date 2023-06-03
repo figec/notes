@@ -3,24 +3,25 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 public class text_edit_activity extends AppCompatActivity {
     private EditText editText;
     private boolean checked;
-
-    private RadioGroup radioGroup;
-    private RadioButton radioButton; //单选按钮
 
     private int style;
 
@@ -64,23 +65,21 @@ public class text_edit_activity extends AppCompatActivity {
 
         //Toast.makeText(getApplicationContext(),"style值为："+String.valueOf(style),Toast.LENGTH_SHORT).show();
 
-        // 设置单选框初始值
+
+        // 设置菜单按钮初始值
+        Button radio_bn = (Button)findViewById(R.id.radio_button);
         switch (style){
             case Item.Important_Urgent:
-                radioButton = (RadioButton) findViewById(R.id.import_urgent);
-                radioButton.setChecked(true);
+                radio_bn.setText("重要且紧急 ▼");
                 break;
             case Item.Important_NUrgent:
-                radioButton = (RadioButton) findViewById(R.id.import_Nurgent);
-                radioButton.setChecked(true);
+                radio_bn.setText("重要非紧急 ▼");
                 break;
             case Item.Urgent_NImportant:
-                radioButton = (RadioButton) findViewById(R.id.Nimport_urgent);
-                radioButton.setChecked(true);
+                radio_bn.setText("紧急非重要 ▼");
                 break;
             case Item.NImportant_NUrgent:
-                radioButton = (RadioButton) findViewById(R.id.Nimport_Nurgent);
-                radioButton.setChecked(true);
+                radio_bn.setText("非重要非紧急 ▼");
                 break;
             default:
 
@@ -88,36 +87,16 @@ public class text_edit_activity extends AppCompatActivity {
         }
 
 
-        // 监听单选框组的点击变化，修改值
-        radioGroup = (RadioGroup) findViewById(R.id.rg);
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener(){
-            public void onCheckedChanged(RadioGroup group,int checkedId){
-                //获取被选中的radiobutton的id
-                radioButton = (RadioButton) findViewById(checkedId);
-                //获取信息
-                String checkText = radioButton.getText().toString();
-                //将信息映射到int 0-4之间
-                switch (checkText){
-                    case "重要且紧急":
-                        style = Item.Important_Urgent;
-                        break;
-                    case "重要非紧急":
-                        style = Item.Important_NUrgent;
-                        break;
-                    case "紧急非重要":
-                        style = Item.Urgent_NImportant;
-                        break;
-                    case "非重要非紧急":
-                        style = Item.NImportant_NUrgent;
-                        break;
-                    default:
-                        style = Item.Default;
-                        break;
-                }
 
+
+        // 索引按钮响应
+        Button index=(Button) findViewById(R.id.radio_button);
+        index.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPopupMenu(index);
 
             }
-
         });
 
 
@@ -155,5 +134,55 @@ public class text_edit_activity extends AppCompatActivity {
         item.setCreat_date(create_Time);
         MainActivity.text_edit_list.add(item);
         MainActivity.myadapter.notifyDataSetChanged();
+    }
+
+    //弹出菜单的按钮框
+    private void showPopupMenu(final View view) {
+        Button bn = (Button)findViewById(R.id.radio_button);
+        final PopupMenu popupMenu = new PopupMenu(this,view);
+        //menu 布局
+        popupMenu.getMenuInflater().inflate(R.menu.radio_select_menu,popupMenu.getMenu());
+        //点击事件
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.radio_all:
+                        bn.setText("默认 ▼");
+                        style = Item.Default;
+                        break;
+                    case R.id.radio_iu:
+                        bn.setText("重要且紧急 ▼");
+                        style = Item.Important_Urgent;
+                        break;
+                    case R.id.radio_inu:
+                        bn.setText("重要非紧急 ▼");
+                        style = Item.Important_NUrgent;
+                        break;
+                    case R.id.radio_niu:
+                        bn.setText("紧急非重要 ▼");
+                        style = Item.Urgent_NImportant;
+                        break;
+                    case R.id.radio_ninu:
+                        bn.setText("非重要非紧急 ▼");
+                        style = Item.NImportant_NUrgent;
+
+                        break;
+                }
+                /*
+                // 修改listview的显示
+                ListView listView=(ListView) findViewById(R.id.list_view);
+                myadapter=new Listview_Adapter(MainActivity.this, R.layout.check_string,current_list);
+                listView.setAdapter(myadapter);
+                myadapter.notifyDataSetChanged();
+
+                 */
+
+                return false;
+            }
+        });
+
+        //显示菜单，不要少了这一步
+        popupMenu.show();
     }
 }

@@ -9,6 +9,24 @@
 
 
     <Button
+        android:id="@+id/radio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_margin="15dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="25dp"
+        android:backgroundTint="#E6E6E6"
+        android:minWidth="2dp"
+        android:minHeight="0dp"
+        android:padding="3dp"
+        android:text="默认 ▼"
+        android:textColor="#4D4D4D"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <Button
         android:id="@+id/title_save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,58 +45,19 @@
         android:id="@+id/edit_text"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:hint="请在这里输入要记录的内容"
-        android:gravity="top"
-        android:padding="0dp"
         android:background="@android:color/transparent"
-        app:layout_constraintTop_toBottomOf="@id/title_save"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.08"
+        android:gravity="top"
+        android:hint="请在这里输入要记录的内容"
+        android:padding="0dp"
         app:layout_constrainedHeight="true"
-        app:layout_constraintHeight_default="spread"
-    tools:ignore="MissingConstraints"
-    tools:layout_editor_absoluteX="0dp" />
-
-
-    <RadioGroup
-        android:id="@+id/rg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="300dp"
-        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.285"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintHeight_default="spread"
+        app:layout_constraintTop_toBottomOf="@id/title_save"
+        app:layout_constraintVertical_bias="0.08"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="0dp" />
 
-        <RadioButton
-            android:id="@+id/import_urgent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:text="重要且紧急" />
 
-        <RadioButton
-            android:id="@+id/import_Nurgent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:text="重要非紧急" />
-
-        <RadioButton
-            android:id="@+id/Nimport_urgent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:text="紧急非重要" />
-
-        <RadioButton
-            android:id="@+id/Nimport_Nurgent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:text="非重要非紧急" />
-    </RadioGroup>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
