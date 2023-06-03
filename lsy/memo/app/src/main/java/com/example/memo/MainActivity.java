@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
 
     protected static int isInit = 0;//是否为第一次打开进行操作，当为0时，重量数据不需要进行读取操作。当为1时，才需要进行读取操作
 
+
+    protected static String pre;// 为了将保存作为静态方法的路径前缀
     //轻量级的数据存取方式,并设置为仅能在改程序下进行读取操作
     SharedPreferences sharedPreferences; //= getSharedPreferences("light_data", MODE_PRIVATE);
     //SharedPreferences sharedPreferences = getPreferences( MODE_PRIVATE);
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        pre = getFilesDir().getAbsolutePath(); // 保存路径前缀
         // 数据初始化
         //读写器初始化
         sharedPreferences = getSharedPreferences("light_data", MODE_PRIVATE);
@@ -348,6 +351,8 @@ public class MainActivity extends AppCompatActivity {
         switch (item_group) {
             case 0:
                 if (item_id==0) {
+                    int place = current_list.indexOf(text_edit_list.get(menuInfo.position));
+                    current_list.remove(place);
                     text_edit_list.remove(menuInfo.position);
                     save_text_list();
                     removed_cnt++;
@@ -372,9 +377,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 保存对应的ArrayList
-    public void save_text_list(){
+    public static void save_text_list(){
         ObjectOutputStream objectOutputStream = null;   //序列化写入文件
-        File file = new File(getFilesDir().getAbsolutePath(),"text_edit_list.txt");
+        File file = new File(pre,"text_edit_list.txt");
+        //File file = new File(getFilesDir().getAbsolutePath(),"text_edit_list.txt");
         try {
             objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
             objectOutputStream.writeObject(text_edit_list);
@@ -384,9 +390,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void save_history_list(){
+    public static void save_history_list(){
         ObjectOutputStream objectOutputStream = null;   //序列化写入文件
-        File file = new File(getFilesDir().getAbsolutePath(),"history_text_list.txt");
+        File file = new File(pre,"history_text_list.txt");
+        //File file = new File(getFilesDir().getAbsolutePath(),"history_text_list.txt");
         try {
             objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
             objectOutputStream.writeObject(history_text_list);

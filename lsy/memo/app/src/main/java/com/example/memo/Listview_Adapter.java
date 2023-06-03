@@ -62,7 +62,7 @@ public class Listview_Adapter extends ArrayAdapter<Item> {
 
         // 对checked下的基础样式设置
         if(item.getChecked()==true){
-            content.setBackgroundColor(Color.LTGRAY);
+            //content.setBackgroundColor(Color.LTGRAY);
             content.setPaintFlags(content.getPaintFlags()|Paint.STRIKE_THRU_TEXT_FLAG);
         }
 
@@ -75,8 +75,13 @@ public class Listview_Adapter extends ArrayAdapter<Item> {
                 // TODO Auto-generated method stub
                 //要做的事情——一定时间后将该元素从数据中删除
                 //定时5s
+                int place = MainActivity.current_list.indexOf(MainActivity.text_edit_list.get(position));
+                MainActivity.current_list.remove(place);
                 MainActivity.text_edit_list.remove(position);
-                //更新listview内容
+                MainActivity.save_text_list();
+
+
+                //更新listview内容-这里实际上使用current_list做处理的，所以这里得同时处理current_list
                 notifyDataSetChanged();
                 //handler.postDelayed(this, 10000);
             }
@@ -94,7 +99,7 @@ public class Listview_Adapter extends ArrayAdapter<Item> {
                     // 如果从false到true 执行迟缓删除操作
                     //样式转换
                     //背景色设置为浅灰色
-                    content.setBackgroundColor(Color.LTGRAY);
+                    //content.setBackgroundColor(Color.LTGRAY);
                     //增加删除线
                     content.setPaintFlags(content.getPaintFlags()|Paint.STRIKE_THRU_TEXT_FLAG);
                     //执行迟缓删除操作
@@ -103,7 +108,7 @@ public class Listview_Adapter extends ArrayAdapter<Item> {
                 else{
                     // 反之，执行删除取消命令
                     //背景色变回白色
-                    content.setBackgroundColor(Color.WHITE);
+                    //content.setBackgroundColor(Color.WHITE);
                     // 去除删除线
                     content.setPaintFlags(content.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                     // 如果在时间内取消了，则去除迟缓删除操作
