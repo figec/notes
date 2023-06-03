@@ -172,7 +172,24 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String input_data= current_list.get(i).getContent();
+                Intent intent_list=new Intent(MainActivity.this,text_edit_activity.class);
+                intent_list.putExtra("extra_data",input_data);
+                intent_list.putExtra("extra_boolean",current_list.get(i).getChecked());
+                intent_list.putExtra("CreatDate",current_list.get(i).getCreat_date().getTime());//传入该项目的创建时间
+                intent_list.putExtra("extra_style",current_list.get(i).getStyle());
+                int place = text_edit_list.indexOf(current_list.get(i)); // 转换后的位置
+                text_edit_list.remove(place);//
+                //Toast.makeText(view.getContext(),"i:"+Integer.toString(text_edit_list.indexOf(current_list.get(i))),Toast.LENGTH_SHORT).show();
+                history_text_list.remove(place+removed_cnt);
+                save_history_list();
 
+                startActivityForResult(intent_list,2);//打开下一个界面并传入唯一标识符2
+            }
+        });
 
     }
 
