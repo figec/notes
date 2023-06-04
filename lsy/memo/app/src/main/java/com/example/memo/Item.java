@@ -28,6 +28,8 @@ public class Item implements Serializable {
     protected int create_period;
     private String content;
     private boolean checked;
+
+    private boolean deleted;
     private Date creat_date=new Date();
 
     private Date modify_date=new Date();
@@ -75,6 +77,18 @@ public class Item implements Serializable {
 
     public void setChecked(boolean checked){
         this.checked = checked;
+    }
+
+    public boolean getDeleted() {
+        return this.deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public boolean getStatus() { //当 deleted 和 ckecked 有一个为 true 时，返回 true，反之返回 false
+        return (this.checked || this.deleted);
     }
     public Date getCreat_date(){return creat_date;}
     public Date getModify_date(){return modify_date;}

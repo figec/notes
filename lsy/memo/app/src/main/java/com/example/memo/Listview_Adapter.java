@@ -13,6 +13,7 @@ import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -79,6 +80,10 @@ public class Listview_Adapter extends ArrayAdapter<Item> {
                 MainActivity.current_list.remove(place);
                 MainActivity.text_edit_list.remove(position);
                 MainActivity.save_text_list();
+                // checked 之后，需要对 history 记录重新排序，保证删除/完成的在末尾
+                // 其他的在前面正常排序
+                Collections.sort(MainActivity.history_text_list,new MainActivity.HistoryComparator());
+                MainActivity.save_history_list();
 
 
                 //更新listview内容-这里实际上使用current_list做处理的，所以这里得同时处理current_list

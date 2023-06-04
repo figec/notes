@@ -1,6 +1,5 @@
 package com.example.memo;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -16,15 +15,12 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.ContextMenu;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.PopupMenu;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -34,7 +30,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.text.SimpleDateFormat;
@@ -53,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
     protected static ArrayList<Item> history_text_list = new ArrayList<Item>();
 
-    protected static int removed_cnt = 0;
-
     protected static int type = 0;// 当前显示的类型
 
     protected static int isInit = 0;//是否为第一次打开进行操作，当为0时，重量数据不需要进行读取操作。当为1时，才需要进行读取操作
@@ -67,13 +60,32 @@ public class MainActivity extends AppCompatActivity {
 
     //编辑器
     private SharedPreferences.Editor editor; //= sharedPreferences.edit();
-    public static class ItemComparator implements Comparator<Item> {
 
-
+    // Comparator 接口是一个函数式接口，用于定义比较器，可以用于对对象进行排序。
+    // 它包含一个抽象方法 compare(T o1, T o2)，用于比较两个对象的顺序。如果 o1 应该排在 o2 前面，
+    // 则返回一个负整数；如果 o1 和 o2 相等，则返回 0；如果 o1 应该排在 o2 后面，则返回一个正整数。
+    public static class TimeComparator implements Comparator<Item> {
         @Override
         public int compare(Item item1, Item item2) {
             // 按照创建时间从后到先排序
+            // 使用 compareTo 方法比较两个 Date 对象时，如果第一个对象早于第二个对象，则返回负数；
+            // 如果两个对象相等，则返回 0；如果第一个对象晚于第二个对象，则返回正数。
             return item2.getCreat_date().compareTo(item1.getCreat_date());
+        }
+    }
+
+    public static class HistoryComparator implements Comparator<Item> {
+        @Override
+        public int compare(Item item1, Item item2) {
+            //按照先 checked / deleted 再日期的排序方法
+            // 保证删除/完成的在末尾，其他的在前面正常排序
+            if ((item1.getStatus() && !item2.getStatus())) {
+                return 1;
+            } else if ((item1.getStatus() && item2.getStatus()) || (!item1.getStatus() && !item2.getStatus())) {
+                return item2.getCreat_date().compareTo(item1.getCreat_date());
+            } else {
+                return -1;
+            }
         }
     }
 
@@ -89,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         editor = sharedPreferences.edit();
         // 读取轻量级数据
         type = sharedPreferences.getInt("type",0);
-        removed_cnt = sharedPreferences.getInt("removed_cnt",0);
+//        removed_cnt = sharedPreferences.getInt("removed_cnt",0);
         isInit = sharedPreferences.getInt("isInit",0);
         //Toast.makeText(getApplicationContext(),"读取的type值为："+Integer.toString(type),Toast.LENGTH_SHORT).show();
         
@@ -194,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                 text_edit_list.remove(place);//
                 save_text_list();
                 //Toast.makeText(view.getContext(),"i:"+Integer.toString(text_edit_list.indexOf(current_list.get(i))),Toast.LENGTH_SHORT).show();
-                history_text_list.remove(place+removed_cnt);
+                history_text_list.remove(place);
                 save_history_list();
 
                 startActivityForResult(intent_list,2);//打开下一个界面并传入唯一标识符2
@@ -338,8 +350,9 @@ public class MainActivity extends AppCompatActivity {
                     save_text_list();
                     history_text_list.add(item);
                     save_history_list();
-                    Collections.sort(text_edit_list, new ItemComparator());
-                    Collections.sort(history_text_list,new ItemComparator());
+                    Collections.sort(text_edit_list, new TimeComparator());
+                    // history 按方法 HistoryComparator 规则排序
+                    Collections.sort(history_text_list,new HistoryComparator());
                     ListView listView=(ListView) findViewById(R.id.list_view);
                     current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
                     if(type!=Item.Default){
@@ -361,7 +374,7 @@ public class MainActivity extends AppCompatActivity {
                             int place = text_edit_list.indexOf(current_list.get(i)); // 转换后的位置
                             text_edit_list.remove(place);//
                             //Toast.makeText(view.getContext(),"i:"+Integer.toString(text_edit_list.indexOf(current_list.get(i))),Toast.LENGTH_SHORT).show();
-                            history_text_list.remove(place+removed_cnt);
+                            history_text_list.remove(place);
                             save_history_list();
 
                             startActivityForResult(intent_list,2);//打开下一个界面并传入唯一标识符2
@@ -399,8 +412,8 @@ public class MainActivity extends AppCompatActivity {
                     save_text_list();
                     history_text_list.add(item);
                     save_history_list();
-                    Collections.sort(text_edit_list, new ItemComparator());//根据创建时间排序
-                    Collections.sort(history_text_list,new ItemComparator());//根据创建时间排序
+                    Collections.sort(text_edit_list, new TimeComparator());//根据创建时间排序
+                    Collections.sort(history_text_list,new HistoryComparator());// history 按方法 HistoryComparator 规则排序
                     ListView listView=(ListView) findViewById(R.id.list_view);
                     current_list = (ArrayList<Item>)text_edit_list.clone(); // 浅拷贝
                     if(type!=Item.Default){
@@ -419,23 +432,24 @@ public class MainActivity extends AppCompatActivity {
         int item_id=item.getItemId(), item_group=item.getGroupId();
         AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item_group) {
-            case 0:
-                if (item_id==0) {
+            case 0://listview 长按
+                if (item_id==0) { //长按删除
                     int place = current_list.indexOf(text_edit_list.get(menuInfo.position));
                     current_list.remove(place);
                     text_edit_list.remove(menuInfo.position);
                     save_text_list();
-                    removed_cnt++;
-                    editor.putInt("removed_cnt",removed_cnt);
-                    editor.commit();
+                    history_text_list.get(menuInfo.position).setDeleted(true);//表示该记录已经删除
+                    Collections.sort(history_text_list,new HistoryComparator());//根据是否删除/完成+创建时间排序
+//                    editor.putInt("removed_cnt",removed_cnt);
+//                    editor.commit();
                     myadapter.notifyDataSetChanged();
                     return true;
                 }
                 break;
-            case 1:
-                if (item_id==0) {
+            case 1://悬浮窗长按
+                if (item_id==0) {//添加笔记
                     findViewById(R.id.fab).performClick();//调用悬浮窗的点击函数
-                } else if (item_id==1) {
+                } else if (item_id==1) {//历史笔记
                     Intent intent=new Intent(MainActivity.this, history_activity.class);
                     startActivity(intent);
                     return true;
