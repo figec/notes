@@ -19,6 +19,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import static com.example.memo.MainActivity.history_text_list;
+import static com.example.memo.MainActivity.save_history_list;
+import static com.example.memo.MainActivity.save_text_list;
+import static com.example.memo.MainActivity.text_edit_list;
+
 public class text_edit_activity extends AppCompatActivity {
     private EditText editText;
     private boolean checked;
@@ -133,6 +138,9 @@ public class text_edit_activity extends AppCompatActivity {
         Item item=new Item(data,false);
         item.setCreat_date(create_Time);
         MainActivity.text_edit_list.add(item);
+        save_text_list();
+        history_text_list.add(item);
+        save_history_list();
         MainActivity.myadapter.notifyDataSetChanged();
     }
 
