@@ -192,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
                 intent_list.putExtra("extra_style",current_list.get(i).getStyle());
                 int place = text_edit_list.indexOf(current_list.get(i)); // 转换后的位置
                 text_edit_list.remove(place);//
+                save_text_list();
                 //Toast.makeText(view.getContext(),"i:"+Integer.toString(text_edit_list.indexOf(current_list.get(i))),Toast.LENGTH_SHORT).show();
                 history_text_list.remove(place+removed_cnt);
                 save_history_list();
