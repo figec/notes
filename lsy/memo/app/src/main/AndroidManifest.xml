@@ -24,7 +24,7 @@
         <activity
             android:name=".history_activity"
             android:exported="false"
-            android:label="历史笔记"/>
+            android:label="历史记录"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">
