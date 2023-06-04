@@ -119,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
                     file.createNewFile(); // 创建文件
                     history_file.createNewFile();
                 } catch (IOException e) {
+                    Toast.makeText(MainActivity.this,"创建文件失败",Toast.LENGTH_SHORT);
                     throw new RuntimeException(e);
                 }
             }
@@ -133,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 objectOutputStream.close();
 
             } catch (IOException e) {
+                Toast.makeText(MainActivity.this,"读取文件错误",Toast.LENGTH_SHORT);
                 throw new RuntimeException(e);
             }
 
@@ -496,6 +498,7 @@ public class MainActivity extends AppCompatActivity {
             text_edit_list = (ArrayList<Item>)objectInputStream.readObject();
             objectInputStream.close();
         } catch (IOException e) {
+            Toast.makeText(MainActivity.this,"读取文件错误",Toast.LENGTH_SHORT);
             throw new RuntimeException(e);
         }catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -511,6 +514,7 @@ public class MainActivity extends AppCompatActivity {
             history_text_list = (ArrayList<Item>)objectInputStream.readObject();
             objectInputStream.close();
         } catch (IOException e) {
+            Toast.makeText(MainActivity.this,"读取文件错误",Toast.LENGTH_SHORT);
             throw new RuntimeException(e);
         }catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
