@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
             PendingIntent pi = PendingIntent.getActivity(this,0,intent ,0);
             int notifyID = 1;
             Notification notification = new Notification.Builder(this, channelId)
-                    .setContentTitle("一键打开笔记")
+                    .setContentTitle("一键打开随记")
                     .setContentText("又有新idea了？快记录下来吧！")
                     .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), android.R.drawable.ic_menu_edit)) //设置大图标
                     .setSmallIcon(android.R.drawable.ic_menu_edit) //设置小图标

@@ -8,7 +8,7 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="笔记"
+        android:label="随记"
         android:supportsRtl="true"
         android:theme="@style/Theme.Memo"
         tools:targetApi="31">
