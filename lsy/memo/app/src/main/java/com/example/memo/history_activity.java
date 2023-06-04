@@ -25,7 +25,7 @@ public class history_activity extends AppCompatActivity {
         Collections.sort(temp_list,new MainActivity.TimeComparator());
 
         ArrayList<PinnedSectionBean> real_data = PinnedSectionBean.getData(temp_list);
-        history_adapter_new myadapter = new history_adapter_new(real_data, this);
+        history_adapter myadapter = new history_adapter(real_data, this);
         PinnedSectionListView listView = (PinnedSectionListView) findViewById(R.id.PinnedSectionListView);
         listView.setAdapter(myadapter);
 
