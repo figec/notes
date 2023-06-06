@@ -6,14 +6,17 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -225,39 +228,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        //锁屏快捷键功能
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            String channelId = "imservice";
-            String channelName = "锁屏快捷键";
-            String description = "锁屏通知";
-            int importance = NotificationManager.IMPORTANCE_HIGH; //设置重要等级
-            NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
-            channel.setSound((Uri) null, (AudioAttributes) null);
-            channel.setDescription(description);
-            channel.enableVibration(false); //设置振动
-            notificationManager.createNotificationChannel(channel);
-
-            String input_data=null;
-            Intent intent=new Intent(this,MainActivity.class);
-            // intent.putExtra("extra_data",input_data);
-            // intent.putExtra("extra_boolean",false);
-            // intent.putExtra("extra_style",Item.Default);
-            // startActivityForResult(intent,1);//打开下一个界面并传入唯一标识符1
-
-            PendingIntent pi = PendingIntent.getActivity(this,0,intent ,0);
-            int notifyID = 1;
-            Notification notification = new Notification.Builder(this, channelId)
-                    .setContentTitle("一键打开随记")
-                    .setContentText("又有新idea了？快记录下来吧！")
-                    .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), android.R.drawable.ic_menu_edit)) //设置大图标
-                    .setSmallIcon(android.R.drawable.ic_menu_edit) //设置小图标
-                    .setContentIntent(pi)
-                    .setStyle(new Notification.MediaStyle())
-                    .setAutoCancel(false) ////设置弹窗在点击后不消失
-                    .build();
-            notificationManager.notify(notifyID, notification);
-        }
+        //注册监听屏幕亮灭的广播(用于控制锁屏快捷键)
+        IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        BroadcastReceiver mReceiver = new ScreenReceiver();
+        registerReceiver(mReceiver, filter);
 
     }
 
@@ -372,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
                             Intent intent_list=new Intent(MainActivity.this,text_edit_activity.class);
                             intent_list.putExtra("extra_data",input_data);
                             intent_list.putExtra("extra_boolean",current_list.get(i).getChecked());
-                            intent_list.putExtra("CreatDate",current_list.get(i).getCreat_date().getTime());//传入该项目的创建时间
+                            intent_list.putExtra("CreateDate",current_list.get(i).getCreat_date().getTime());//传入该项目的创建时间
                             intent_list.putExtra("extra_style",current_list.get(i).getStyle());
                             int place = text_edit_list.indexOf(current_list.get(i)); // 转换后的位置
                             text_edit_list.remove(place);//
@@ -522,6 +497,42 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    //锁屏快捷键功能
+    public class ScreenReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (Intent.ACTION_SCREEN_ON.equals(intent.getAction())) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    String channelId = "service";
+                    String channelName = "锁屏快捷键";
+                    String description = "锁屏通知";
+                    int importance = NotificationManager.IMPORTANCE_HIGH; //设置重要等级
+                    NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
+                    channel.setSound((Uri) null, (AudioAttributes) null);
+                    channel.setDescription(description);
+                    channel.enableVibration(false); //设置振动
+                    notificationManager.createNotificationChannel(channel);
+
+                    Intent intent_n =new Intent(MainActivity.this,MainActivity.class);
+
+                    PendingIntent pi = PendingIntent.getActivity(MainActivity.this, 0, intent_n, PendingIntent.FLAG_IMMUTABLE);
+                    int notifyID = 1;
+                    Notification notification = new Notification.Builder(MainActivity.this, channelId)
+                            .setContentTitle("一键打开随记")
+                            .setContentText("又有新idea了？快记录下来吧！")
+                            .setLargeIcon(BitmapFactory.decodeResource(getResources(), android.R.drawable.ic_menu_edit)) //设置大图标
+                            .setSmallIcon(android.R.drawable.ic_menu_edit) //设置小图标
+                            .setContentIntent(pi)
+                            .setStyle(new Notification.MediaStyle())
+                            .setAutoCancel(false) ////设置弹窗在点击后不消失
+                            .build();
+                    notificationManager.notify(notifyID, notification);
+                }
+            }
+        }
+    }
 
 
 }
