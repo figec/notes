@@ -17,6 +17,7 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 
 import static com.example.memo.MainActivity.history_text_list;
@@ -29,6 +30,7 @@ public class text_edit_activity extends AppCompatActivity {
     private boolean checked;
 
     private int style;
+    private int extra_type;
 
 
 
@@ -44,10 +46,12 @@ public class text_edit_activity extends AppCompatActivity {
 
 
 
-        
+
         Intent intent = getIntent();
         String action = intent.getAction();
         String type = intent.getType();
+
+
         //设置接收类型为文本
         if (Intent.ACTION_SEND.equals(action) && type != null){
             if ("text/plain".equals(type)) {
@@ -62,6 +66,7 @@ public class text_edit_activity extends AppCompatActivity {
         long l_Creat_Date = getIntent().getLongExtra("CreatDate", 0);
         Date Creat_date = new Date(l_Creat_Date);//接受该项目的传入时间
         style = intent_input.getIntExtra("extra_style",Item.Default);
+        extra_type = intent_input.getIntExtra("extra_type",Item.Default);
         if (input_data!=null){//设置文本框初始值
             int i=input_data.indexOf(" ");
             input_data=input_data.substring(i+1);//扔掉时间变量
@@ -138,8 +143,26 @@ public class text_edit_activity extends AppCompatActivity {
         Item item=new Item(data,false);
         item.setCreat_date(create_Time);
         MainActivity.text_edit_list.add(item);
+
+        Collections.sort(MainActivity.text_edit_list, new MainActivity.TimeComparator());//根据创建时间排序
+
+
+
+
+
+        if(extra_type == style){
+            MainActivity.current_list.add(item);
+            Collections.sort(MainActivity.current_list,new MainActivity.HistoryComparator());// history 按方法 HistoryComparator 规则排序
+
+            MainActivity.myadapter.notifyDataSetChanged();
+
+        }
+
+
+
         save_text_list();
         history_text_list.add(item);
+        Collections.sort(MainActivity.history_text_list,new MainActivity.HistoryComparator());// history 按方法 HistoryComparator 规则排序
         save_history_list();
         MainActivity.myadapter.notifyDataSetChanged();
     }
